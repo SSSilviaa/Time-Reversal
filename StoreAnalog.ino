@@ -3,7 +3,7 @@
 
 #define CS_PIN_SD 10
 #define ANALOG_PIN A0
-#define NUM_READINGS 100 // Number of readings to store
+#define NUM_READINGS 1000 // Number of readings to store
 
 File dataFile;
 
@@ -30,9 +30,15 @@ void setup() {
     return;
   }
 
+  // Configure ADC prescaler to 16
+  ADCSRA &= ~(1 << ADPS2 | 1 << ADPS1 | 1 << ADPS0); // Clear prescaler bits
+  ADCSRA |= (1 << ADPS2); // Set prescaler to 16 (ADC clock = 1MHz)
+
+  Serial.println("ADC configured for maximum speed.");
+
   // Read analog values and store in SD card
   for (int i = 0; i < NUM_READINGS; i++) {
-    int sensorValue = i; //analogRead(ANALOG_PIN);
+    int sensorValue = i; // fastAnalogRead(ANALOG_PIN); //analogRead(ANALOG_PIN);
     dataFile.println(sensorValue);
     Serial.println(sensorValue);
     delayMicroseconds(1); // Adjust delay as needed
@@ -45,4 +51,18 @@ void setup() {
 
 void loop() {
   // Nothing to do here
+}
+
+int fastAnalogRead(uint8_t pin) {
+  // Configure ADC mux to select the analog pin
+  ADMUX = (1 << REFS0) | (pin & 0x07);
+
+  // Start the conversion
+  ADCSRA |= (1 << ADSC);
+
+  // Wait for the conversion to complete
+  while (ADCSRA & (1 << ADSC));
+
+  // Return the ADC value
+  return ADC;
 }
