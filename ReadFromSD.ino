@@ -40,7 +40,7 @@ void loop() {
     // Output value to DAC
     // myDac.analogWrite(sensorValue);
 
-    delay(100); // Adjust delay as needed
+    delayMicroseconds(1); // Adjust delay as needed
   } else {
     // Close the file when done reading
     dataFile.close();

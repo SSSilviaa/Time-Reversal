@@ -18,6 +18,11 @@ void setup() {
   }
   Serial.println("SD Card initialized.");
 
+  // Delete the existing file if it exists
+  if (SD.exists("data.txt")) {
+    SD.remove("data.txt");
+  }
+
   // Open file for writing
   dataFile = SD.open("data.txt", FILE_WRITE);
   if (!dataFile) {
@@ -30,7 +35,7 @@ void setup() {
     int sensorValue = i; //analogRead(ANALOG_PIN);
     dataFile.println(sensorValue);
     Serial.println(sensorValue);
-    delay(100); // Adjust delay as needed
+    delayMicroseconds(1); // Adjust delay as needed
   }
 
   // Close the file
