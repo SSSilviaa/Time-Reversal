@@ -3,9 +3,9 @@
 #include <MCP492X.h> // Include the library for the MCP492X DAC
 
 const int CS_PIN_SD = BUILTIN_SDCARD; // Define the chip select pin for SD card
-#define CS_PIN_DAC 10 // Define the chip select pin for DAC
+#define CS_PIN_DAC 4 // Define the chip select pin for DAC
 
-MCP492X myDac(CS_PIN_DAC);
+MCP492X myDac(CS_PIN_DAC);    
 
 File dataFile;
 
@@ -27,7 +27,9 @@ void setup() {
   }
 
   // Initialize DAC
-  // myDac.begin();
+  Serial.println("DAC initializing.");
+  myDac.begin();
+  Serial.println("DAC initialized.");
 }
 
 void loop() {
@@ -37,7 +39,7 @@ void loop() {
     Serial.println(sensorValue);
 
     // Output value to DAC
-    // myDac.analogWrite(sensorValue);
+    myDac.analogWrite(sensorValue);
 
     delayMicroseconds(10); // Adjust delay as needed
   } else {
