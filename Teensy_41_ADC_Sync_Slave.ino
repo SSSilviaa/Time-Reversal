@@ -23,6 +23,7 @@ File myFile;
 
 void setup() {
   pinMode(syncPin, INPUT);
+  pinMode(adcPin, INPUT); // so that the microphone can actually receive analog signal
   Serial.begin(9600);
   
   Serial.println("INPUT - Receiving synchronization signal...");
@@ -45,7 +46,7 @@ void setup() {
     return;
   }
   Serial.println("initialization done.");
-  myFile = SD.open("adc_master.txt", FILE_WRITE);
+  myFile = SD.open("adc_slave_scatter.txt", FILE_WRITE);
   
   isSampling = true;
   startTime = millis(); // Record the start time
