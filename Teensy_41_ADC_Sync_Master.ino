@@ -26,9 +26,12 @@ void setup() {
   Serial.begin(9600);
   
   Serial.println("Master - Sending synchronization signal...");
-  digitalWrite(syncPin, HIGH);
+  for(int i = 0; i<70; i++){
+    digitalWrite(syncPin, LOW);
+    delay(200);
+  }
   //delay(100); // Pulse duration
-  //digitalWrite(syncPin, LOW);
+  digitalWrite(syncPin, HIGH);
 
   // Initialize ADC
   adc->adc0->setAveraging(1);
@@ -69,6 +72,7 @@ void loop() {
   if (millis() - startTime >= duration) {
       myFile.close(); // Close the file after one minute
       Serial.println("File closed after one minute.");
+      digitalWrite(syncPin, LOW);
       // Optionally, stop writing to the file
       while (true); // Halt further execution
   } 
