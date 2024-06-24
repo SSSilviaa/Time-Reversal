@@ -23,6 +23,7 @@ File myFile;
 
 void setup() {
   pinMode(syncPin, OUTPUT);
+  pinMode(adcPin, INPUT);
   Serial.begin(9600);
   
   Serial.println("Master - Sending synchronization signal...");
