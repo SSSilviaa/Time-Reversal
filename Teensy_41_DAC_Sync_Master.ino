@@ -58,6 +58,12 @@ void loop() {
     dataFile.close();
     Serial.println("Data playback complete.");
     dataFile = SD.open("dac.txt", FILE_READ);
+    if (!dataFile) 
+    {
+      Serial.println("Delaying...");
+      delayMicroseconds(10000);
+      return;
     //while (true) {} // Stop the loop
+    }
   }
 }
