@@ -1,10 +1,9 @@
 #include <MCP492X.h> // Include the library
 
 #define PIN_SPI_CHIP_SELECT_DAC 4 // Or any pin you'd like to use
+const int syncPin = 7;
 
 MCP492X myDac(PIN_SPI_CHIP_SELECT_DAC);
-
-const int syncPin = 7;
 
 const PROGMEM uint16_t DACLookup_FullSine_5Bit[32] =
 {
@@ -13,6 +12,10 @@ const PROGMEM uint16_t DACLookup_FullSine_5Bit[32] =
   2048, 1648, 1264,  910,  600,  345,  156,   39,
      0,   39,  156,  345,  600,  910, 1264, 1648
 };
+
+const PROGMEM uint16_t DACLookup_FullSine_nBit[300] = 
+{843, 837, 829, 821, 816, 814, 817, 821, 833, 840, 847, 851, 854, 855, 850, 846, 842, 843, 846, 853, 861, 868, 874, 881, 884, 889, 898, 906, 914, 919, 916, 910, 903, 893, 883, 874, 867, 860, 857, 858, 861, 865, 867, 866, 861, 855, 850, 847, 841, 836, 827, 821, 813, 811, 814, 820, 828, 840, 851, 858, 862, 864, 864, 863, 859, 857, 859, 864, 873, 878, 880, 881, 882, 883, 887, 896, 906, 914, 917, 915, 910, 902, 893, 884, 877, 869, 865, 867, 869, 875, 879, 882, 882, 879, 875, 873, 868, 865, 851, 838, 827, 821, 820, 823, 832, 842, 852, 862, 868, 870, 865, 860, 853, 848, 847, 850, 861, 868, 877, 882, 887, 894, 902, 911, 916, 922, 920, 915, 908, 898, 884, 874, 866, 862, 859, 859, 861, 865, 868, 867, 865, 860, 857, 854, 853, 851, 847, 840, 834, 824, 821, 820, 824, 829, 836, 842, 846, 849, 846, 843, 838, 836, 835, 839, 843, 850, 858, 864, 867, 869, 873, 881, 890, 899, 901, 897, 888, 880, 870, 861, 850, 841, 838, 837, 838, 843, 851, 856, 858, 856, 854, 853, 852, 851, 844, 833, 822, 811, 805, 803, 808, 816, 826, 836, 844, 848, 849, 843, 836, 834, 834, 837, 845, 856, 866, 875, 880, 884, 890, 896, 911, 918, 922, 921, 917, 909, 901, 889, 881, 872, 867, 865, 867, 871, 876, 879, 881, 879, 876, 873, 872, 870, 867, 861, 855, 848, 844, 844, 850, 858, 866, 872, 879, 882, 884, 879, 874, 866, 860, 859, 864, 872, 880, 889, 898, 906, 912, 919, 929, 935, 939, 935, 929, 920, 912, 901, 887, 879, 873, 871, 872, 873, 877, 881, 884, 884, 877, 873, 870, 867, 861, 851, 841, 832, 822, 822, 824, 834, 844, 854};
+  
 
 // const PROGMEM uint16_t DACLookup_FullSine_8Bit[256] =
 // {
@@ -53,25 +56,31 @@ const PROGMEM uint16_t DACLookup_FullSine_5Bit[32] =
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  
   myDac.begin();
-  pinMode(syncPin,OUTPUT);
-  Serial.println("Master - Sending synchronization signal...");
-  for(int i = 0; i<70; i++){
-    digitalWrite(syncPin, LOW);
-    delay(200);
-  }
-  digitalWrite(syncPin, HIGH);
-  Serial.println("Master - Sent synchronization signal...");
+  //Slave
+  pinMode(syncPin, INPUT);
+  // wait until mater signal
+  Serial.println("INPUT - Receiving synchronization signal...");
+  while (digitalRead(syncPin) != HIGH) {};
+  Serial.println("Received master signal...");
+
+  //Master
+  // pinMode(syncPin, OUTPUT);
+  // Serial.println("Master - Sending synchronization signal...");
+  // for(int i = 0; i<70; i++){
+  //   digitalWrite(syncPin, LOW);
+  //   delay(200);
+  // }
+  // digitalWrite(syncPin, HIGH);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 300; i++)
   {
-    // Serial.println(pgm_read_word(&(DACLookup_FullSine_8Bit[i])));
-    myDac.analogWrite(pgm_read_word(&(DACLookup_FullSine_5Bit[i])));
+    //Serial.println(pgm_read_word(&(DACLookup_FullSine_nBit[i])));
+    int value = ((pgm_read_word(&(DACLookup_FullSine_nBit[i])))*4096)/1024;
+    myDac.analogWrite(value);
     delayMicroseconds(10);
   }
 
