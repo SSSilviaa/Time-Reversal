@@ -23,7 +23,7 @@ void setup() {
   Serial.println("SD Card initialized.");
 
   // Open file for reading
-  dataFile = SD.open("dac.txt", FILE_READ);
+  dataFile = SD.open("output_5_T1.txt", FILE_READ);
   if (!dataFile) {
     Serial.println("Failed to open file for reading.");
     return;
@@ -40,7 +40,6 @@ void setup() {
     digitalWrite(syncPin, LOW);
     delay(200);
   }
-  //delay(100); // Pulse duration
   digitalWrite(syncPin, HIGH);
 }
 
@@ -49,7 +48,8 @@ void setup() {
 void loop() {
   if (dataFile.available()) {
     int sensorValue = dataFile.parseInt();
-    //Serial.println(sensorValue);
+    sensorValue = (sensorValue-2500) * 5;
+    Serial.println(sensorValue); 
     myDac.analogWrite(sensorValue);    
     delayMicroseconds(4);
   }
@@ -57,13 +57,11 @@ void loop() {
     // Close the file when done reading
     dataFile.close();
     Serial.println("Data playback complete.");
-    dataFile = SD.open("dac.txt", FILE_READ);
-    if (!dataFile) 
-    {
-      Serial.println("Delaying...");
-      delayMicroseconds(10000);
-      return;
-    //while (true) {} // Stop the loop
+    dataFile = SD.open("output_5_T1", FILE_READ);
+    if (!dataFile) {
+      Serial.println("Failed to open file for reading.");
+      delay(10000);
     }
+    //while (true) {} // Stop the loop
   }
 }
