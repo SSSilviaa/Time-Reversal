@@ -25,8 +25,8 @@ void setup() {
   pinMode(syncPin, OUTPUT);
   pinMode(adcPin, INPUT);
   Serial.begin(9600);
-
-  // Initialize ADC
+  
+    // Initialize ADC
   adc->adc0->setAveraging(1);
   adc->adc0->setResolution(12);
   adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::VERY_HIGH_SPEED);
@@ -40,13 +40,14 @@ void setup() {
     return;
   }
   Serial.println("initialization done.");
-  myFile = SD.open("adc_3.txt", FILE_WRITE);
+  myFile = SD.open("adc_9_T1.txt", FILE_WRITE);
 
   Serial.println("Master - Sending synchronization signal...");
-  for(int i = 0; i<70; i++){
+  for(int i = 0; i<200; i++){
     digitalWrite(syncPin, LOW);
     delay(200);
   }
+  //delay(100); // Pulse duration
   digitalWrite(syncPin, HIGH);
   
   isSampling = true;
@@ -60,7 +61,7 @@ void loop() {
   if (isSampling) {
     if (sampleIndex < SAMPLE_SIZE) {
       int signal = adc->adc0->analogReadContinuous();
-      // Serial.println(signal);
+      Serial.println(signal);
       samples[sampleIndex] = signal;
       sampleIndex++;
       delayMicroseconds(10);

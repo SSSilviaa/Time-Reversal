@@ -23,14 +23,10 @@ File myFile;
 
 void setup() {
   pinMode(syncPin, INPUT);
-  pinMode(adcPin, INPUT);
+  pinMode(adcPin, INPUT); // so that the microphone can actually receive analog signal
   Serial.begin(9600);
   
   Serial.println("INPUT - Receiving synchronization signal...");
-  
-  // wait until mater signal
-  while (digitalRead(syncPin) != HIGH) {};
-  Serial.println("Received master signal...");
 
   // Initialize ADC
   adc->adc0->setAveraging(1);
@@ -46,7 +42,11 @@ void setup() {
     return;
   }
   Serial.println("initialization done.");
-  myFile = SD.open("adc_master.txt", FILE_WRITE);
+  myFile = SD.open("adc_10_T3.txt", FILE_WRITE);
+
+  //Waiting Master Signal
+  while (digitalRead(syncPin) != HIGH) {};
+  Serial.println("Received master signal...");
   
   isSampling = true;
   startTime = millis(); // Record the start time
@@ -59,7 +59,7 @@ void loop() {
   if (isSampling) {
     if (sampleIndex < SAMPLE_SIZE) {
       int signal = adc->adc0->analogReadContinuous();
-      // Serial.println(signal);
+      Serial.println(signal);
       samples[sampleIndex] = signal;
       sampleIndex++;
       delayMicroseconds(10);
